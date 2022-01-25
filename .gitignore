@@ -26,3 +26,4 @@ bin/
 obj/
 Properties/
 appsettings.*
+.vs

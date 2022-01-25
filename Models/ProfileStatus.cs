@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 
 namespace EscortBookCustomerProfile.Models
@@ -10,6 +11,7 @@ namespace EscortBookCustomerProfile.Models
 
         public string ProfileID { get; set; }
 
+        [JsonProperty("profileStatusCategoryId")]
         public string ProfileStatusCategoryID { get; set; }
 
         #endregion

@@ -39,9 +39,9 @@ namespace EscortBookCustomerProfile.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteByIdAsync(string profileId)
+        public async Task DeleteByIdAsync(string id)
         {
-            _context.Avatars.Remove(new Avatar { ProfileID = profileId });
+            _context.Avatars.Remove(new Avatar { ID = id });
             await _context.SaveChangesAsync();
         }
 

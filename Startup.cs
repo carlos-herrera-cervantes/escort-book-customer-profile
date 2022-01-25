@@ -1,5 +1,8 @@
+using EscortBookCustomerProfile.Backgrounds;
 using EscortBookCustomerProfile.Contexts;
+using EscortBookCustomerProfile.Handlers;
 using EscortBookCustomerProfile.Repositories;
+using EscortBookCustomerProfile.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +25,13 @@ namespace EscortBookCustomerProfile
                 => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
             services.AddTransient<IProfileRepository, ProfileRepository>();
             services.AddTransient<IAvatarRepository, AvatarRepository>();
+            services.AddTransient<IIdentificationRepository, IdentificationRepository>();
+            services.AddTransient<IPhotoRepository, PhotoRepository>();
+            services.AddTransient<IProfileStatusRepository, ProfileStatusRepository>();
+            services.AddTransient<IAWSS3Service, AWSS3Service>();
+            services.AddTransient<IProfileStatusCategoryRepository, ProfileStatusCategoryRepository>();
+            services.AddSingleton(typeof(IOperationHandler<>), typeof(OperationHandler<>));
+            services.AddHostedService<ProfileStatusConsumer>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
