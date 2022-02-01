@@ -12,6 +12,6 @@ namespace EscortBookCustomerProfile.Repositories
 
         Task UpdateByIdAsync(Avatar avatar, JsonPatchDocument<Avatar> currentAvatar);
 
-        Task DeleteByIdAsync(string profileId);
+        Task DeleteByIdAsync(string id);
     }
 }

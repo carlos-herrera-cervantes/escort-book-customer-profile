@@ -10,7 +10,7 @@ namespace EscortBookCustomerProfile.Models
 
         public string Path { get; set; }
 
-        public string CustomerID { get; set; }
+        public string ProfileID { get; set; }
 
         #endregion
 
