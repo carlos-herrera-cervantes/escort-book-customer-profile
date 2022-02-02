@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/profiles")]
+    [Route("api/v1/customer/profile")]
     [ApiController]
     public class ProfileController : ControllerBase
     {

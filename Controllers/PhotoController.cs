@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/profiles/{profileId}/photos")]
+    [Route("api/v1/customer/profile/{profileId}/photos")]
     [ApiController]
     public class PhotoController : ControllerBase
     {
