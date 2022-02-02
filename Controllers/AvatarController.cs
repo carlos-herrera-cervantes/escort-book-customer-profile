@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/profiles/{profileId}/avatar")]
+    [Route("api/v1/customer/profile/{profileId}/avatar")]
     [ApiController]
     public class AvatarController : ControllerBase
     {

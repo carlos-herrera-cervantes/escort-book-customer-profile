@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/profiles/{profileId}/status")]
+    [Route("api/v1/customer/profile/{profileId}/status")]
     public class ProfileStatusController : ControllerBase
     {
         #region snippet_Properties

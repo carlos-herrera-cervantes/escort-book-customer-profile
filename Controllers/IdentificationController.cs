@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/profiles/{profileId}/identification")]
+    [Route("api/v1/customer/profile/{profileId}/identification")]
     [ApiController]
     public class IdentificationController : ControllerBase
     {
