@@ -3,7 +3,7 @@ using EscortBookCustomerProfile.Common;
 using EscortBookCustomerProfile.Handlers;
 using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
-using Microsoft.AspNetCore.JsonPatch;
+using EscortBookCustomerProfile.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscortBookCustomerProfile.Controllers
@@ -32,10 +32,10 @@ namespace EscortBookCustomerProfile.Controllers
 
         #region snippet_ActionMethods
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] string id)
+        [HttpGet]
+        public async Task<IActionResult> GetByIdAsync([FromBody] Payload payload)
         {
-            var profile = await _profileRepository.GetByIdAsync(id);
+            var profile = await _profileRepository.GetByIdAsync(payload.User.Id);
             
             if (profile is null) return NotFound();
 
@@ -52,15 +52,20 @@ namespace EscortBookCustomerProfile.Controllers
             return Created("", profile);
         }
 
-        [HttpPatch("{id}")]
-        public async Task<IActionResult> UpdateByIdAsync([FromRoute] string id, JsonPatchDocument<Profile> currentProfile)
+        [HttpPatch]
+        public async Task<IActionResult> UpdateByIdAsync([FromBody] UpdateProfileDTO profile)
         {
-            var newProfile = await _profileRepository.GetByIdAsync(id);
+            var currentProfile = await _profileRepository.GetByIdAsync(profile.User.Id);
 
-            if (newProfile is null) return NotFound();
+            if (currentProfile is null) return NotFound();
 
-            await _profileRepository.UpdateByIdAsync(newProfile, currentProfile);
-            return Ok(newProfile);
+            currentProfile.FirstName = profile.FirstName ?? currentProfile.FirstName;
+            currentProfile.LastName = profile.LastName ?? currentProfile.LastName;
+            currentProfile.Gender = profile.Gender ?? currentProfile.Gender;
+            currentProfile.Birthdate = profile.Birthdate ?? currentProfile.Birthdate;
+
+            await _profileRepository.UpdateByIdAsync(currentProfile);
+            return Ok(currentProfile);
         }
 
         #endregion

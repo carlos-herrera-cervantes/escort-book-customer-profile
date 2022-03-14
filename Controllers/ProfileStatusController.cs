@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/customer/profile/{profileId}/status")]
+    [Route("api/v1/customer/profile/status")]
     public class ProfileStatusController : ControllerBase
     {
         #region snippet_Properties
@@ -25,13 +25,15 @@ namespace EscortBookCustomerProfile.Controllers
         #region snippet_ActionMethods
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateByIdAsync([FromRoute] string profileId, [FromBody] JsonPatchDocument<ProfileStatus> currentProfileStatus)
+        public async Task<IActionResult> UpdateByIdAsync([FromBody] UpdateProfileStatusDTO profile)
         {
-            var profileStatus = await _profileStatusRepository.GetByIdAsync(profileId);
+            var profileStatus = await _profileStatusRepository.GetByIdAsync(profile.User.Id);
 
             if (profileStatus is null) return NotFound();
 
-            await _profileStatusRepository.UpdateByIdAsync(profileStatus, currentProfileStatus);
+            profileStatus.ProfileStatusCategoryID = profile.ProfileStatusCategoryID;
+
+            await _profileStatusRepository.UpdateByIdAsync(profileStatus);
 
             return Ok(profileStatus);
         }
