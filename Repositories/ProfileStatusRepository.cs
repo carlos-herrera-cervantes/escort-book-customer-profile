@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using EscortBookCustomerProfile.Contexts;
 using EscortBookCustomerProfile.Models;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
 namespace EscortBookCustomerProfile.Repositories
@@ -32,9 +31,8 @@ namespace EscortBookCustomerProfile.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateByIdAsync(ProfileStatus profileStatus, JsonPatchDocument<ProfileStatus> currentProfileStatus)
+        public async Task UpdateByIdAsync(ProfileStatus profileStatus)
         {
-            currentProfileStatus.ApplyTo(profileStatus);
             _context.Entry(profileStatus).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }

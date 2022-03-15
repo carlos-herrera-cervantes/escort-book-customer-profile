@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
 using EscortBookCustomerProfile.Services;
+using EscortBookCustomerProfile.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/customer/profile/{profileId}/avatar")]
+    [Route("api/v1/customer/profile/avatar")]
     [ApiController]
     public class AvatarController : ControllerBase
     {
@@ -42,9 +43,9 @@ namespace EscortBookCustomerProfile.Controllers
         #region snippet_ActionMethods
 
         [HttpGet]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] string profileId)
+        public async Task<IActionResult> GetByIdAsync([FromBody] Payload payload)
         {
-            var avatar = await _avatarRepository.GetByIdAsync(profileId);
+            var avatar = await _avatarRepository.GetByIdAsync(payload.User.Id);
 
             if (avatar is null) return NotFound();
 
@@ -57,14 +58,14 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromRoute] string profileId, [FromForm] IFormFile image)
+        public async Task<IActionResult> CreateAsync([FromRoute] string profileId, [FromForm] IFormFile image, [FromBody] Payload payload)
         {
             var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, profileId, imageStream);
+            var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
 
             var avatar = new Avatar();
-            avatar.ProfileID = profileId;
-            avatar.Path = $"{profileId}/{image.FileName}";
+            avatar.ProfileID = payload.User.Id;
+            avatar.Path = $"{payload.User.Id}/{image.FileName}";
 
             await _avatarRepository.CreateAsync(avatar);
 
@@ -74,17 +75,17 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateByIdAsync([FromRoute] string profileId, [FromForm] IFormFile image)
+        public async Task<IActionResult> UpdateByIdAsync([FromRoute] string profileId, [FromForm] IFormFile image, [FromBody] Payload payload)
         {
-            var newAvatar = await _avatarRepository.GetByIdAsync(profileId);
+            var newAvatar = await _avatarRepository.GetByIdAsync(payload.User.Id);
 
             if (newAvatar is null) return NotFound();
 
             var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, profileId, imageStream);
+            var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
 
             var currentAvatar = new JsonPatchDocument<Avatar>();
-            currentAvatar.Replace(a => a.Path, $"{profileId}/{image.FileName}");
+            currentAvatar.Replace(a => a.Path, $"{payload.User.Id}/{image.FileName}");
 
             await _avatarRepository.UpdateByIdAsync(newAvatar, currentAvatar);
 
@@ -94,9 +95,9 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteByIdAsync([FromRoute] string profileId)
+        public async Task<IActionResult> DeleteByIdAsync([FromBody] Payload payload)
         {
-            var avatar = await _avatarRepository.GetByIdAsync(profileId);
+            var avatar = await _avatarRepository.GetByIdAsync(payload.User.Id);
 
             if (avatar is null) return NotFound();
 
@@ -106,6 +107,5 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         #endregion
-
     }
 }

@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using EscortBookCustomerProfile.Models;
-using Microsoft.AspNetCore.JsonPatch;
 
 namespace EscortBookCustomerProfile.Repositories
 {
@@ -10,6 +9,6 @@ namespace EscortBookCustomerProfile.Repositories
 
         Task CreateAsync(Profile profile);
 
-        Task UpdateByIdAsync(Profile profile, JsonPatchDocument<Profile> currentProfile);
+        Task UpdateByIdAsync(Profile profile);
     }
 }

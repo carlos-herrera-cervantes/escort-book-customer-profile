@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using EscortBookCustomerProfile.Contexts;
 using EscortBookCustomerProfile.Models;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
 namespace EscortBookCustomerProfile.Repositories
@@ -24,7 +23,7 @@ namespace EscortBookCustomerProfile.Repositories
         #region snippet_ActionMethods
 
         public async Task<Profile> GetByIdAsync(string customerId)
-            => await _context.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.ID == customerId);
+            => await _context.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.CustomerID == customerId);
 
         public async Task CreateAsync(Profile profile)
         {
@@ -32,9 +31,8 @@ namespace EscortBookCustomerProfile.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateByIdAsync(Profile profile, JsonPatchDocument<Profile> currentProfile)
+        public async Task UpdateByIdAsync(Profile profile)
         {
-            currentProfile.ApplyTo(profile);
             _context.Entry(profile).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
