@@ -21,8 +21,10 @@ namespace EscortBookCustomerProfile.Models
 
         #region snippet_ForeignProperties
 
+        [JsonIgnore]
         public Profile Profile { get; set; }
 
+        [JsonIgnore]
         public IdentificationPart IdentificationPart { get; set; }
 
         #endregion

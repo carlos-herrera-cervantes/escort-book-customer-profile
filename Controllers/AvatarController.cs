@@ -58,7 +58,7 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromRoute] string profileId, [FromForm] IFormFile image, [FromBody] Payload payload)
+        public async Task<IActionResult> CreateAsync([FromForm] IFormFile image, [FromBody] Payload payload)
         {
             var imageStream = image.OpenReadStream();
             var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
@@ -75,7 +75,7 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateByIdAsync([FromRoute] string profileId, [FromForm] IFormFile image, [FromBody] Payload payload)
+        public async Task<IActionResult> UpdateByIdAsync([FromForm] IFormFile image, [FromBody] Payload payload)
         {
             var newAvatar = await _avatarRepository.GetByIdAsync(payload.User.Id);
 

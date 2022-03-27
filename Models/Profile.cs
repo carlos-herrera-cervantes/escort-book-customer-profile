@@ -37,12 +37,16 @@ namespace EscortBookCustomerProfile.Models
 
         #region snippet_ForeignProperties
 
+        [JsonIgnore]
         public ICollection<Photo> Photos { get; set; }
 
+        [JsonIgnore]
         public Avatar Avatar { get; set; }
 
+        [JsonIgnore]
         public ICollection<Identification> Identifications { get; set; }
 
+        [JsonIgnore]
         public ProfileStatus ProfileStatus { get; set; }
 
         #endregion

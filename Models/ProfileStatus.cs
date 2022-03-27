@@ -19,6 +19,7 @@ namespace EscortBookCustomerProfile.Models
 
         #region snippet_ForeignProperties
 
+        [JsonIgnore]
         public ProfileStatusCategory ProfileStatusCategory { get; set; }
 
         #endregion
