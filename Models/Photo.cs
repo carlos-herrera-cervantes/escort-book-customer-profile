@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 
 namespace EscortBookCustomerProfile.Models
 {
@@ -16,6 +17,7 @@ namespace EscortBookCustomerProfile.Models
 
         #region snippet_ForeignProperties
 
+        [JsonIgnore]
         public Profile Profile { get; set; }
 
         #endregion

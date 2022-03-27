@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace EscortBookCustomerProfile.Models
 {
@@ -17,6 +18,7 @@ namespace EscortBookCustomerProfile.Models
 
         #region snippet_ForeignProperties
 
+        [JsonIgnore]
         public ICollection<ProfileStatus> ProfileStatus { get; set; }
 
         #endregion
