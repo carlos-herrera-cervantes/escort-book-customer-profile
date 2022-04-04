@@ -24,7 +24,7 @@ namespace EscortBookCustomerProfile.Repositories
         #region snippet_ActionMethods
 
         public async Task<Avatar> GetByIdAsync(string profileId)
-            => await _context.Avatars.AsNoTracking().FirstOrDefaultAsync(a => a.ProfileID == profileId);
+            => await _context.Avatars.AsNoTracking().FirstOrDefaultAsync(a => a.CustomerID == profileId);
 
         public async Task CreateAsync(Avatar avatar)
         {

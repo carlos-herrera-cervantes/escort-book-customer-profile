@@ -8,7 +8,7 @@ namespace EscortBookCustomerProfile.Models
     {
         #region snippet_Properties
 
-        public string IdentificationPartID { get; set; } = Guid.NewGuid().ToString();
+        public string ID { get; set; } = Guid.NewGuid().ToString();
 
         public string Name { get; set; }
 

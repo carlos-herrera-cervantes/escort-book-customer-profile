@@ -23,7 +23,7 @@ namespace EscortBookCustomerProfile.Repositories
         #region snippet_ActionMethods
 
         public async Task<ProfileStatus> GetByIdAsync(string profileId)
-            => await _context.ProfileStatus.AsNoTracking().FirstOrDefaultAsync(p => p.ProfileID == profileId);
+            => await _context.ProfileStatus.AsNoTracking().FirstOrDefaultAsync(p => p.CustomerID == profileId);
 
         public async Task CreateAsync(ProfileStatus profileStatus)
         {

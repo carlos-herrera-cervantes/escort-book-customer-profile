@@ -1,7 +1,6 @@
 ﻿using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
 using EscortBookCustomerProfile.Services;
-using EscortBookCustomerProfile.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -43,9 +42,13 @@ namespace EscortBookCustomerProfile.Controllers
         #region snippet_ActionMethods
 
         [HttpGet("{identificationPartID}")]
-        public async Task<IActionResult> GetByIdAsync([FromBody] Payload payload, [FromRoute] string identificationPartID)
+        public async Task<IActionResult> GetByIdAsync
+        (
+            [FromHeader(Name = "user-id")] string userId,
+            [FromRoute] string identificationPartID
+        )
         {
-            var identification = await _identificationRepository.GetByIdAsync(payload.User.Id, identificationPartID);
+            var identification = await _identificationRepository.GetByIdAsync(userId, identificationPartID);
 
             if (identification is null) return NotFound();
 
@@ -58,15 +61,19 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Payload payload, [FromForm] CreateIdentificationDto dto)
+        public async Task<IActionResult> CreateAsync
+        (
+            [FromHeader(Name = "user-id")] string userId,
+            [FromForm] CreateIdentificationDto dto
+        )
         {
             var (image, identificationPartID) = dto;
             var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
+            var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
 
             var identification = new Identification();
-            identification.ProfileID = payload.User.Id;
-            identification.Path = $"{payload.User.Id}/{image.FileName}";
+            identification.CustomerID = userId;
+            identification.Path = $"{userId}/{image.FileName}";
             identification.IdentificationPartID = identificationPartID;
 
             await _identificationRepository.CreateAsync(identification);
@@ -77,17 +84,22 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPatch("{identificationPartID}")]
-        public async Task<IActionResult> UpdateByIdAsync([FromBody] Payload payload, [FromRoute] string identificationPartID, [FromForm] IFormFile image)
+        public async Task<IActionResult> UpdateByIdAsync
+        (
+            [FromHeader(Name = "user-id")] string userId,
+            [FromRoute] string identificationPartID,
+            [FromForm] IFormFile image
+        )
         {
-            var newIdentification = await _identificationRepository.GetByIdAsync(payload.User.Id, identificationPartID);
+            var newIdentification = await _identificationRepository.GetByIdAsync(userId, identificationPartID);
 
             if (newIdentification is null) return NotFound();
 
             var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
+            var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
 
             var currentIdentification = new JsonPatchDocument<Identification>();
-            currentIdentification.Replace(a => a.Path, $"{payload.User.Id}/{image.FileName}");
+            currentIdentification.Replace(a => a.Path, $"{userId}/{image.FileName}");
 
             await _identificationRepository.UpdateByIdAsync(newIdentification, currentIdentification);
 

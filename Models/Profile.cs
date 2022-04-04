@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using EscortBookCustomerProfile.Constants;
-using EscortBookCustomerProfile.Types;
 using Newtonsoft.Json;
 
 namespace EscortBookCustomerProfile.Models
@@ -67,13 +66,6 @@ namespace EscortBookCustomerProfile.Models
 
         [JsonProperty("birthdate")]
         public DateTime? Birthdate { get; set; }
-
-        #endregion
-
-        #region snippet_JwtProperties
-
-        [JsonProperty("user")]
-        public DecodedJwt User { get; set; }
 
         #endregion
     }

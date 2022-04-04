@@ -57,6 +57,17 @@ namespace EscortBookCustomerProfile.Services
             return $"{_endpoint}/{_bucketName}/{profileId}/{key}";
         }
 
+        public async Task DeleteObjectAsync(string key)
+        {
+            var request = new DeleteObjectRequest
+            {
+                BucketName = _bucketName,
+                Key = key
+            };
+
+            await _s3Client.DeleteObjectAsync(request);
+        }
+
         #endregion
     }
 }

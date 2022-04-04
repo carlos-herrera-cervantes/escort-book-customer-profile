@@ -28,7 +28,7 @@ namespace EscortBookCustomerProfile.Repositories
             => await _context.Photos.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
 
         public async Task<Photo> GetByIdAsync(string profileId, string id)
-            => await _context.Photos.AsNoTracking().FirstOrDefaultAsync(p => p.ProfileID == profileId && p.ID == id);
+            => await _context.Photos.AsNoTracking().FirstOrDefaultAsync(p => p.CustomerID == profileId && p.ID == id);
 
         public async Task CreateAsync(Photo photo)
         {

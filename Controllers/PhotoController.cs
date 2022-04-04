@@ -1,10 +1,12 @@
-﻿using EscortBookCustomerProfile.Models;
+﻿using EscortBookCustomerProfile.Common;
+using EscortBookCustomerProfile.Handlers;
+using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
 using EscortBookCustomerProfile.Services;
-using EscortBookCustomerProfile.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +24,8 @@ namespace EscortBookCustomerProfile.Controllers
 
         private readonly IConfiguration _configuration;
 
+        private readonly IOperationHandler<string> _operationHandler;
+
         #endregion
 
         #region snippet_Constructors
@@ -30,23 +34,25 @@ namespace EscortBookCustomerProfile.Controllers
         (
             IPhotoRepository photoRepository,
             IAWSS3Service s3Service,
-            IConfiguration configuration
+            IConfiguration configuration,
+            IOperationHandler<string> operationHandler
         )
         {
             _photoRepository = photoRepository;
             _s3Service = s3Service;
             _configuration = configuration;
+            _operationHandler = operationHandler;
         }
 
         #endregion
 
         #region snippet_ActionMethods
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync([FromBody] Payload payload, [FromQuery] Pagination pagination)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByExternalAsync([FromRoute] string id, [FromQuery] Pagination pagination)
         {
             var (page, pageSize) = pagination;
-            var rows = await _photoRepository.GetAllAsync(payload.User.Id, page, pageSize);
+            var rows = await _photoRepository.GetAllAsync(id, page, pageSize);
 
             var endpoint = _configuration["AWS:S3:Endpoint"];
             var bucketName = _configuration["AWS:S3:Name"];
@@ -59,30 +65,40 @@ namespace EscortBookCustomerProfile.Controllers
             return Ok(photos);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync([FromBody] Payload payload, [FromRoute] string id)
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync
+        (
+            [FromHeader(Name = "user-id")] string userId,
+            [FromQuery] Pagination pagination
+        )
         {
-            var photo = await _photoRepository.GetByIdAsync(payload.User.Id, id);
-
-            if (photo is null) return NotFound();
+            var (page, pageSize) = pagination;
+            var rows = await _photoRepository.GetAllAsync(userId, page, pageSize);
 
             var endpoint = _configuration["AWS:S3:Endpoint"];
             var bucketName = _configuration["AWS:S3:Name"];
+            var photos = rows.Select(r =>
+            {
+                r.Path = $"{endpoint}/{bucketName}/{r.Path}";
+                return r;
+            });
 
-            photo.Path = $"{endpoint}/{bucketName}/{photo.Path}";
-
-            return Ok(photo);
+            return Ok(photos);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Payload payload, [FromForm] IFormFile image)
+        public async Task<IActionResult> CreateAsync
+        (
+            [FromHeader(Name = "user-id")] string userId,
+            [Required][FromForm] IFormFile image
+        )
         {
             var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
+            var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
 
             var photo = new Photo();
-            photo.ProfileID = payload.User.Id;
-            photo.Path = $"{payload.User.Id}/{image.FileName}";
+            photo.CustomerID = userId;
+            photo.Path = $"{userId}/{image.FileName}";
 
             await _photoRepository.CreateAsync(photo);
 
@@ -92,13 +108,18 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteByIdAsync([FromBody] Payload payload, [FromRoute] string id)
+        public async Task<IActionResult> DeleteByIdAsync
+        (
+            [FromHeader(Name = "user-id")] string userId,
+            [FromRoute] string id
+        )
         {
-            var photo = await _photoRepository.GetByIdAsync(payload.User.Id, id);
+            var photo = await _photoRepository.GetByIdAsync(userId, id);
 
             if (photo is null) return NotFound();
 
             await _photoRepository.DeleteByIdAsync(photo.ID);
+            Emitter<string>.EmitMessage(_operationHandler, photo.Path);
 
             return NoContent();
         }

@@ -53,7 +53,7 @@ namespace EscortBookCustomerProfile.Backgrounds
                 if (statusCategory is null) return;
 
                 var newProfileStatus = new ProfileStatus();
-                newProfileStatus.ProfileID = profile.ID;
+                newProfileStatus.CustomerID = profile.CustomerID;
                 newProfileStatus.ProfileStatusCategoryID = statusCategory.ID;
 
                 await _profileStatusRepository.CreateAsync(newProfileStatus);
