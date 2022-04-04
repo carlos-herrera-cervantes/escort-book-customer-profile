@@ -24,7 +24,7 @@ namespace EscortBookCustomerProfile.Repositories
         #region snippet_ActionMethods
 
         public async Task<Identification> GetByIdAsync(string profileId, string partId)
-            => await _context.Identifications.AsNoTracking().FirstOrDefaultAsync(i => i.ProfileID == profileId && i.IdentificationPartID == partId);
+            => await _context.Identifications.AsNoTracking().FirstOrDefaultAsync(i => i.CustomerID == profileId && i.IdentificationPartID == partId);
 
         public async Task CreateAsync(Identification identification)
         {

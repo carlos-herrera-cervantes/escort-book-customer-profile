@@ -13,7 +13,7 @@ namespace EscortBookCustomerProfile.Models
 
         public string Path { get; set; }
 
-        public string ProfileID { get; set; }
+        public string CustomerID { get; set; }
 
         public string IdentificationPartID { get; set; }
 
@@ -22,7 +22,7 @@ namespace EscortBookCustomerProfile.Models
         #region snippet_ForeignProperties
 
         [JsonIgnore]
-        public Profile Profile { get; set; }
+        public Profile Customer { get; set; }
 
         [JsonIgnore]
         public IdentificationPart IdentificationPart { get; set; }

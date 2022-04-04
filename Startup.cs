@@ -30,8 +30,10 @@ namespace EscortBookCustomerProfile
             services.AddTransient<IProfileStatusRepository, ProfileStatusRepository>();
             services.AddTransient<IAWSS3Service, AWSS3Service>();
             services.AddTransient<IProfileStatusCategoryRepository, ProfileStatusCategoryRepository>();
+            services.AddTransient<IIdentificationPartRepository, IdentificationPartRepository>();
             services.AddSingleton(typeof(IOperationHandler<>), typeof(OperationHandler<>));
             services.AddHostedService<ProfileStatusConsumer>();
+            services.AddHostedService<S3Consumer>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

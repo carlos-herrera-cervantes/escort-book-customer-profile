@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
 using EscortBookCustomerProfile.Services;
-using EscortBookCustomerProfile.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -42,10 +41,25 @@ namespace EscortBookCustomerProfile.Controllers
 
         #region snippet_ActionMethods
 
-        [HttpGet]
-        public async Task<IActionResult> GetByIdAsync([FromBody] Payload payload)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByExternalAsync([FromRoute] string id)
         {
-            var avatar = await _avatarRepository.GetByIdAsync(payload.User.Id);
+            var avatar = await _avatarRepository.GetByIdAsync(id);
+
+            if (avatar is null) return NotFound();
+
+            var endpoint = _configuration["AWS:S3:Endpoint"];
+            var bucketName = _configuration["AWS:S3:Name"];
+            
+            avatar.Path = $"{endpoint}/{bucketName}/{avatar.Path}";
+
+            return Ok(avatar);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetByIdAsync([FromHeader(Name = "user-id")] string userId)
+        {
+            var avatar = await _avatarRepository.GetByIdAsync(userId);
 
             if (avatar is null) return NotFound();
 
@@ -58,14 +72,14 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromForm] IFormFile image, [FromBody] Payload payload)
+        public async Task<IActionResult> CreateAsync([FromForm] IFormFile image, [FromHeader(Name = "user-id")] string userId)
         {
             var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
+            var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
 
             var avatar = new Avatar();
-            avatar.ProfileID = payload.User.Id;
-            avatar.Path = $"{payload.User.Id}/{image.FileName}";
+            avatar.CustomerID = userId;
+            avatar.Path = $"{userId}/{image.FileName}";
 
             await _avatarRepository.CreateAsync(avatar);
 
@@ -75,17 +89,17 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateByIdAsync([FromForm] IFormFile image, [FromBody] Payload payload)
+        public async Task<IActionResult> UpdateByIdAsync([FromForm] IFormFile image, [FromHeader(Name = "user-id")] string userId)
         {
-            var newAvatar = await _avatarRepository.GetByIdAsync(payload.User.Id);
+            var newAvatar = await _avatarRepository.GetByIdAsync(userId);
 
             if (newAvatar is null) return NotFound();
 
             var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, payload.User.Id, imageStream);
+            var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
 
             var currentAvatar = new JsonPatchDocument<Avatar>();
-            currentAvatar.Replace(a => a.Path, $"{payload.User.Id}/{image.FileName}");
+            currentAvatar.Replace(a => a.Path, $"{userId}/{image.FileName}");
 
             await _avatarRepository.UpdateByIdAsync(newAvatar, currentAvatar);
 
@@ -95,9 +109,9 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteByIdAsync([FromBody] Payload payload)
+        public async Task<IActionResult> DeleteByIdAsync([FromHeader(Name = "user-id")] string userId)
         {
-            var avatar = await _avatarRepository.GetByIdAsync(payload.User.Id);
+            var avatar = await _avatarRepository.GetByIdAsync(userId);
 
             if (avatar is null) return NotFound();
 

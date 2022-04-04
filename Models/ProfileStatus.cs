@@ -1,4 +1,3 @@
-using EscortBookCustomerProfile.Types;
 using Newtonsoft.Json;
 using System;
 
@@ -10,7 +9,7 @@ namespace EscortBookCustomerProfile.Models
 
         public string ID { get; set; } = Guid.NewGuid().ToString();
 
-        public string ProfileID { get; set; }
+        public string CustomerID { get; set; }
 
         [JsonProperty("profileStatusCategoryId")]
         public string ProfileStatusCategoryID { get; set; }
@@ -31,13 +30,6 @@ namespace EscortBookCustomerProfile.Models
 
         [JsonProperty("profileStatusCategoryId")]
         public string ProfileStatusCategoryID { get; set; }
-
-        #endregion
-
-        #region snippet_JwtPayload
-
-        [JsonProperty("user")]
-        public DecodedJwt User { get; set; }
 
         #endregion
     }

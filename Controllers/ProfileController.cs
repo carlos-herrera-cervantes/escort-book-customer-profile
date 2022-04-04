@@ -1,9 +1,6 @@
 using System.Threading.Tasks;
-using EscortBookCustomerProfile.Common;
-using EscortBookCustomerProfile.Handlers;
 using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
-using EscortBookCustomerProfile.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EscortBookCustomerProfile.Controllers
@@ -16,46 +13,35 @@ namespace EscortBookCustomerProfile.Controllers
 
         private readonly IProfileRepository _profileRepository;
 
-        private readonly IOperationHandler<Profile> _operationHandler;
 
         #endregion
 
         #region snippet_Constructors
 
-        public ProfileController(IProfileRepository profileRepository, IOperationHandler<Profile> operationHandler)
-        {
-            _profileRepository = profileRepository;
-            _operationHandler = operationHandler;
-        }
+        public ProfileController(IProfileRepository profileRepository) => _profileRepository = profileRepository;
 
         #endregion
 
         #region snippet_ActionMethods
 
         [HttpGet]
-        public async Task<IActionResult> GetByIdAsync([FromBody] Payload payload)
+        public async Task<IActionResult> GetByIdAsync([FromHeader(Name = "user-id")] string userId)
         {
-            var profile = await _profileRepository.GetByIdAsync(payload.User.Id);
+            var profile = await _profileRepository.GetByIdAsync(userId);
             
             if (profile is null) return NotFound();
 
             return Ok(profile);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Profile profile)
-        {
-            await _profileRepository.CreateAsync(profile);
-
-            Emitter<Profile>.EmitMessage(_operationHandler, profile);
-
-            return Created("", profile);
-        }
-
         [HttpPatch]
-        public async Task<IActionResult> UpdateByIdAsync([FromBody] UpdateProfileDTO profile)
+        public async Task<IActionResult> UpdateByIdAsync
+        (
+            [FromBody] UpdateProfileDTO profile,
+            [FromHeader(Name = "user-id")] string userId
+        )
         {
-            var currentProfile = await _profileRepository.GetByIdAsync(profile.User.Id);
+            var currentProfile = await _profileRepository.GetByIdAsync(userId);
 
             if (currentProfile is null) return NotFound();
 

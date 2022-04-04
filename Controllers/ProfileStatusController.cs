@@ -1,6 +1,5 @@
 ﻿using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -25,9 +24,13 @@ namespace EscortBookCustomerProfile.Controllers
         #region snippet_ActionMethods
 
         [HttpPatch]
-        public async Task<IActionResult> UpdateByIdAsync([FromBody] UpdateProfileStatusDTO profile)
+        public async Task<IActionResult> UpdateByIdAsync
+        (
+            [FromBody] UpdateProfileStatusDTO profile,
+            [FromHeader(Name = "user-id")] string userId
+        )
         {
-            var profileStatus = await _profileStatusRepository.GetByIdAsync(profile.User.Id);
+            var profileStatus = await _profileStatusRepository.GetByIdAsync(userId);
 
             if (profileStatus is null) return NotFound();
 
