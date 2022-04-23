@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/customer/profile/avatar")]
+    [Route("api/v1/customer")]
     [ApiController]
     public class AvatarController : ControllerBase
     {
@@ -41,7 +41,7 @@ namespace EscortBookCustomerProfile.Controllers
 
         #region snippet_ActionMethods
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}/profile/avatar")]
         public async Task<IActionResult> GetByExternalAsync([FromRoute] string id)
         {
             var avatar = await _avatarRepository.GetByIdAsync(id);
@@ -56,7 +56,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Ok(avatar);
         }
 
-        [HttpGet]
+        [HttpGet("profile/avatar")]
         public async Task<IActionResult> GetByIdAsync([FromHeader(Name = "user-id")] string userId)
         {
             var avatar = await _avatarRepository.GetByIdAsync(userId);
@@ -71,7 +71,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Ok(avatar);
         }
 
-        [HttpPost]
+        [HttpPost("profile/avatar")]
         public async Task<IActionResult> CreateAsync([FromForm] IFormFile image, [FromHeader(Name = "user-id")] string userId)
         {
             var imageStream = image.OpenReadStream();
@@ -88,7 +88,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Created("", avatar);
         }
 
-        [HttpPatch]
+        [HttpPatch("profile/avatar")]
         public async Task<IActionResult> UpdateByIdAsync([FromForm] IFormFile image, [FromHeader(Name = "user-id")] string userId)
         {
             var newAvatar = await _avatarRepository.GetByIdAsync(userId);
@@ -108,7 +108,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Ok(newAvatar);
         }
 
-        [HttpDelete]
+        [HttpDelete("profile/avatar")]
         public async Task<IActionResult> DeleteByIdAsync([FromHeader(Name = "user-id")] string userId)
         {
             var avatar = await _avatarRepository.GetByIdAsync(userId);
