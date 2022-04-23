@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/customer/profile/photos")]
+    [Route("api/v1/customer")]
     [ApiController]
     public class PhotoController : ControllerBase
     {
@@ -48,7 +48,7 @@ namespace EscortBookCustomerProfile.Controllers
 
         #region snippet_ActionMethods
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}/profile/photos")]
         public async Task<IActionResult> GetByExternalAsync([FromRoute] string id, [FromQuery] Pagination pagination)
         {
             var (page, pageSize) = pagination;
@@ -65,7 +65,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Ok(photos);
         }
 
-        [HttpGet]
+        [HttpGet("profile/photos")]
         public async Task<IActionResult> GetAllAsync
         (
             [FromHeader(Name = "user-id")] string userId,
@@ -86,7 +86,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Ok(photos);
         }
 
-        [HttpPost]
+        [HttpPost("profile/photos")]
         public async Task<IActionResult> CreateAsync
         (
             [FromHeader(Name = "user-id")] string userId,
@@ -107,7 +107,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Created("", photo);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("profile/photos/{id}")]
         public async Task<IActionResult> DeleteByIdAsync
         (
             [FromHeader(Name = "user-id")] string userId,
