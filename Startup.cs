@@ -22,7 +22,7 @@ namespace EscortBookCustomerProfile
         {
             services.AddControllers().AddNewtonsoftJson();
             services.AddDbContext<EscortBookCustomerProfileContext>(options
-                => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
+                => options.UseNpgsql(Configuration["ConnectionStrings:Default"]));
             services.AddTransient<IProfileRepository, ProfileRepository>();
             services.AddTransient<IAvatarRepository, AvatarRepository>();
             services.AddTransient<IIdentificationRepository, IdentificationRepository>();
