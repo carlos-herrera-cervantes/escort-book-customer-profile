@@ -87,6 +87,7 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPost("profile/photos")]
+        [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> CreateAsync
         (
             [FromHeader(Name = "user-id")] string userId,

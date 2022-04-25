@@ -26,6 +26,9 @@ namespace EscortBookCustomerProfile.Repositories
         public async Task<IEnumerable<IdentificationPart>> GetAllAsync()
             => await this._context.IdentificationParts.ToListAsync();
 
+        public async Task<IdentificationPart> GetByIdAsync(string id)
+            => await this._context.IdentificationParts.AsNoTracking().FirstOrDefaultAsync(i => i.ID == id);
+
         #endregion
     }
 }

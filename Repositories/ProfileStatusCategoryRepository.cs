@@ -27,6 +27,11 @@ namespace EscortBookCustomerProfile.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Name == name);
 
+        public async Task<ProfileStatusCategory> GetByIdAsync(string id)
+            => await _context.ProfileStatusCategories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.ID == id);
+
         #endregion
     }
 }
