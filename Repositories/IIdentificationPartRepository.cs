@@ -7,5 +7,7 @@ namespace EscortBookCustomerProfile.Repositories
     public interface IIdentificationPartRepository
     {
          Task<IEnumerable<IdentificationPart>> GetAllAsync();
+
+        Task<IdentificationPart> GetByIdAsync(string id);
     }
 }

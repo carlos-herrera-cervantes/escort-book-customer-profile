@@ -72,6 +72,7 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPost("profile/avatar")]
+        [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> CreateAsync([FromForm] IFormFile image, [FromHeader(Name = "user-id")] string userId)
         {
             var imageStream = image.OpenReadStream();
@@ -89,6 +90,7 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPatch("profile/avatar")]
+        [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> UpdateByIdAsync([FromForm] IFormFile image, [FromHeader(Name = "user-id")] string userId)
         {
             var newAvatar = await _avatarRepository.GetByIdAsync(userId);

@@ -1,4 +1,5 @@
-﻿using EscortBookCustomerProfile.Models;
+﻿using EscortBookCustomerProfile.Attributes;
+using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
 using EscortBookCustomerProfile.Services;
 using Microsoft.AspNetCore.Http;
@@ -61,6 +62,8 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPost]
+        [IdentificationPartExists]
+        [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> CreateAsync
         (
             [FromHeader(Name = "user-id")] string userId,
@@ -84,6 +87,8 @@ namespace EscortBookCustomerProfile.Controllers
         }
 
         [HttpPatch("{identificationPartID}")]
+        [IdentificationPartExists]
+        [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> UpdateByIdAsync
         (
             [FromHeader(Name = "user-id")] string userId,

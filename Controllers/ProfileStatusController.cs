@@ -1,4 +1,5 @@
-﻿using EscortBookCustomerProfile.Models;
+﻿using EscortBookCustomerProfile.Attributes;
+using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace EscortBookCustomerProfile.Controllers
         #region snippet_ActionMethods
 
         [HttpPatch]
+        [ProfileStatusCategoryExists]
         public async Task<IActionResult> UpdateByIdAsync
         (
             [FromBody] UpdateProfileStatusDTO profile,
