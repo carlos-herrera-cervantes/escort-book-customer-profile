@@ -2,6 +2,8 @@
 using EscortBookCustomerProfile.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EscortBookCustomerProfile.Repositories
@@ -23,8 +25,13 @@ namespace EscortBookCustomerProfile.Repositories
 
         #region snippet_ActionMethods
 
+        public async Task<IEnumerable<Identification>> GetAllByCustomerAsync(string profileId)
+            => await _context.Identifications.Where(i => i.CustomerID == profileId).ToListAsync();
+
         public async Task<Identification> GetByIdAsync(string profileId, string partId)
-            => await _context.Identifications.AsNoTracking().FirstOrDefaultAsync(i => i.CustomerID == profileId && i.IdentificationPartID == partId);
+            => await _context.Identifications
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i => i.CustomerID == profileId && i.IdentificationPartID == partId);
 
         public async Task CreateAsync(Identification identification)
         {

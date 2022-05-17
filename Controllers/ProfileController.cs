@@ -13,7 +13,6 @@ namespace EscortBookCustomerProfile.Controllers
 
         private readonly IProfileRepository _profileRepository;
 
-
         #endregion
 
         #region snippet_Constructors

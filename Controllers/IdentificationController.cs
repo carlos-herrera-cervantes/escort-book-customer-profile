@@ -6,11 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EscortBookCustomerProfile.Controllers
 {
-    [Route("api/v1/customer/profile/identification")]
+    [Route("api/v1/customer")]
     [ApiController]
     public class IdentificationController : ControllerBase
     {
@@ -42,7 +43,22 @@ namespace EscortBookCustomerProfile.Controllers
 
         #region snippet_ActionMethods
 
-        [HttpGet("{identificationPartID}")]
+        [HttpGet("{id}/profile/identification")]
+        public async Task<IActionResult> GetByExternalAsync([FromRoute] string id)
+        {
+            var rows = await _identificationRepository.GetAllByCustomerAsync(id);
+            var endpoint = _configuration["AWS:S3:Endpoint"];
+            var bucketName = _configuration["AWS:S3:Name"];
+            var identifications = rows.Select(r =>
+            {
+                r.Path = $"{endpoint}/{bucketName}/{r.Path}";
+                return r;
+            });
+
+            return Ok(identifications);
+        }
+
+        [HttpGet("profile/identification/{identificationPartID}")]
         public async Task<IActionResult> GetByIdAsync
         (
             [FromHeader(Name = "user-id")] string userId,
@@ -61,7 +77,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Ok(identification);
         }
 
-        [HttpPost]
+        [HttpPost("profile/identification")]
         [IdentificationPartExists]
         [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> CreateAsync
@@ -86,7 +102,7 @@ namespace EscortBookCustomerProfile.Controllers
             return Created("", identification);
         }
 
-        [HttpPatch("{identificationPartID}")]
+        [HttpPatch("profile/identification/{identificationPartID}")]
         [IdentificationPartExists]
         [RequestSizeLimit(2_000_000)]
         public async Task<IActionResult> UpdateByIdAsync
