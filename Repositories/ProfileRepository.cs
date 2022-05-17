@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using EscortBookCustomerProfile.Contexts;
 using EscortBookCustomerProfile.Models;
@@ -22,6 +24,9 @@ namespace EscortBookCustomerProfile.Repositories
 
         #region snippet_ActionMethods
 
+        public async Task<IEnumerable<Profile>> GetAllAsync(int page, int pageSize)
+            => await _context.Profiles.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
         public async Task<Profile> GetByIdAsync(string customerId)
             => await _context.Profiles.AsNoTracking().FirstOrDefaultAsync(p => p.CustomerID == customerId);
 
@@ -36,6 +41,8 @@ namespace EscortBookCustomerProfile.Repositories
             _context.Entry(profile).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
+
+        public async Task<int> CountAsync() => await _context.Profiles.CountAsync();
 
         #endregion
     }

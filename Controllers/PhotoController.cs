@@ -51,7 +51,7 @@ namespace EscortBookCustomerProfile.Controllers
         [HttpGet("{id}/profile/photos")]
         public async Task<IActionResult> GetByExternalAsync([FromRoute] string id, [FromQuery] Pagination pagination)
         {
-            var (page, pageSize) = pagination;
+            var (page, pageSize, _) = pagination;
             var rows = await _photoRepository.GetAllAsync(id, page, pageSize);
 
             var endpoint = _configuration["AWS:S3:Endpoint"];
@@ -72,7 +72,7 @@ namespace EscortBookCustomerProfile.Controllers
             [FromQuery] Pagination pagination
         )
         {
-            var (page, pageSize) = pagination;
+            var (page, pageSize, _) = pagination;
             var rows = await _photoRepository.GetAllAsync(userId, page, pageSize);
 
             var endpoint = _configuration["AWS:S3:Endpoint"];
