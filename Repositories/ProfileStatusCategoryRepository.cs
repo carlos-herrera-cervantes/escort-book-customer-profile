@@ -1,4 +1,5 @@
-﻿using EscortBookCustomerProfile.Contexts;
+﻿using System.Collections.Generic;
+using EscortBookCustomerProfile.Contexts;
 using EscortBookCustomerProfile.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -21,6 +22,9 @@ namespace EscortBookCustomerProfile.Repositories
         #endregion
 
         #region snippet_ActionMethods
+
+        public async Task<IEnumerable<ProfileStatusCategory>> GetAllAsync()
+            => await _context.ProfileStatusCategories.ToListAsync();
 
         public async Task<ProfileStatusCategory> GetByName(string name)
             => await _context.ProfileStatusCategories

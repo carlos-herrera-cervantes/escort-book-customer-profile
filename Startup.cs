@@ -14,7 +14,7 @@ namespace EscortBookCustomerProfile
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; set; }
+        private IConfiguration Configuration { get; set; }
 
         public Startup(IConfiguration configuration) => Configuration = configuration;
 
@@ -29,11 +29,13 @@ namespace EscortBookCustomerProfile
             services.AddTransient<IPhotoRepository, PhotoRepository>();
             services.AddTransient<IProfileStatusRepository, ProfileStatusRepository>();
             services.AddTransient<IAWSS3Service, AWSS3Service>();
+            services.AddTransient<IKafkaService, KafkaService>();
             services.AddTransient<IProfileStatusCategoryRepository, ProfileStatusCategoryRepository>();
             services.AddTransient<IIdentificationPartRepository, IdentificationPartRepository>();
             services.AddSingleton(typeof(IOperationHandler<>), typeof(OperationHandler<>));
             services.AddHostedService<ProfileStatusConsumer>();
             services.AddHostedService<S3Consumer>();
+            services.AddHostedService<BlockUserConsumer>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -44,7 +46,6 @@ namespace EscortBookCustomerProfile
             }
 
             app.UseRouting();
-
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
     }

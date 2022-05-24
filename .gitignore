@@ -27,3 +27,4 @@ obj/
 Properties/
 appsettings.*
 .vs
+.idea

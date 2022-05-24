@@ -4,6 +4,7 @@ using EscortBookCustomerProfile.Handlers;
 using EscortBookCustomerProfile.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace EscortBookCustomerProfile.Backgrounds
 {
@@ -15,6 +16,8 @@ namespace EscortBookCustomerProfile.Backgrounds
 
         private readonly IAWSS3Service _s3Service;
 
+        private readonly ILogger _logger;
+
         #endregion
 
         #region snippet_Constructors
@@ -22,7 +25,8 @@ namespace EscortBookCustomerProfile.Backgrounds
         public S3Consumer
         (
             IOperationHandler<string> operationHandler,
-            IServiceScopeFactory factory
+            IServiceScopeFactory factory,
+            ILogger<S3Consumer> logger
         )
         {
             _operationHandler = operationHandler;
@@ -30,6 +34,7 @@ namespace EscortBookCustomerProfile.Backgrounds
                 .CreateScope()
                 .ServiceProvider
                 .GetRequiredService<IAWSS3Service>();
+            _logger = logger;
         }
 
         #endregion
@@ -38,7 +43,11 @@ namespace EscortBookCustomerProfile.Backgrounds
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _operationHandler.Subscribe("S3Consumer", async key => await _s3Service.DeleteObjectAsync(key));
+            _operationHandler.Subscribe("S3Consumer", async key =>
+            {
+                await _s3Service.DeleteObjectAsync(key);
+                _logger.LogInformation("SUCCESSFUL DELETE FILE ON S3");
+            });
             return Task.CompletedTask;
         }
 
