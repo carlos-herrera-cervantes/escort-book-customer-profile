@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EscortBookCustomerProfile.Common;
 using EscortBookCustomerProfile.Handlers;
 using EscortBookCustomerProfile.Types;
+using EscortBookCustomerProfile.Constants;
 
 namespace EscortBookCustomerProfile.Controllers
 {
@@ -75,9 +76,9 @@ namespace EscortBookCustomerProfile.Controllers
 
             await _profileStatusRepository.UpdateByIdAsync(profileStatus);
 
-            if (category.Name == "Locked")
+            if (category.Name == ValidProfileStatus.Locked || category.Name == ValidProfileStatus.Active)
             {
-                var blockUserEvent = new BlockUserEvent { UserId = id };
+                var blockUserEvent = new BlockUserEvent { UserId = id, Status = category.Name };
                 Emitter<BlockUserEvent>.EmitMessage(_operationHandler, blockUserEvent);
             }
 
