@@ -6,5 +6,8 @@ namespace EscortBookCustomerProfile.Types
     {
         [JsonProperty("userId")]
         public string UserId { get; set; }
+
+        [JsonProperty("status")]
+        public string Status { get; set; }
     }
 }
