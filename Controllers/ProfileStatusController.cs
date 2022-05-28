@@ -1,8 +1,9 @@
-﻿using EscortBookCustomerProfile.Attributes;
-using EscortBookCustomerProfile.Models;
+﻿using EscortBookCustomerProfile.Models;
 using EscortBookCustomerProfile.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 using EscortBookCustomerProfile.Common;
 using EscortBookCustomerProfile.Handlers;
 using EscortBookCustomerProfile.Types;
@@ -78,21 +79,28 @@ namespace EscortBookCustomerProfile.Controllers
 
             if (category.Name == ValidProfileStatus.Locked || category.Name == ValidProfileStatus.Active)
             {
-                var blockUserEvent = new BlockUserEvent { UserId = id, Status = category.Name };
-                Emitter<BlockUserEvent>.EmitMessage(_operationHandler, blockUserEvent);
+                EmitMessage(id, category.Name);
             }
 
             return Ok(profileStatus);
         }
 
         [HttpPatch("profile/status")]
-        [ProfileStatusCategoryExists]
         public async Task<IActionResult> UpdateByIdAsync
         (
             [FromBody] UpdateProfileStatusDTO profile,
             [FromHeader(Name = "user-id")] string userId
         )
         {
+            var category = await _profileStatusCategoryRepository.GetByIdAsync(profile.ProfileStatusCategoryID);
+
+            if (category is null) return NotFound();
+            
+            var validStatus = new List<string> { ValidProfileStatus.Deactivated, ValidProfileStatus.Deleted };
+            var validOperation = validStatus.FirstOrDefault(s => s == category.Name);
+
+            if (validOperation is null) return BadRequest();
+
             var profileStatus = await _profileStatusRepository.GetByIdAsync(userId);
 
             if (profileStatus is null) return NotFound();
@@ -101,9 +109,21 @@ namespace EscortBookCustomerProfile.Controllers
 
             await _profileStatusRepository.UpdateByIdAsync(profileStatus);
 
+            if (category.Name == ValidProfileStatus.Deactivated) EmitMessage(userId, category.Name);
+
             return Ok(profileStatus);
         }
 
+        #endregion
+        
+        #region snippe_Helpers
+
+        private void EmitMessage(string userId, string categoryName)
+        {
+            var blockUserEvent = new BlockUserEvent { UserId = userId, Status = categoryName };
+            Emitter<BlockUserEvent>.EmitMessage(_operationHandler, blockUserEvent);
+        }
+        
         #endregion
     }
 }
