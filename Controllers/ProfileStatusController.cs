@@ -20,7 +20,9 @@ namespace EscortBookCustomerProfile.Controllers
 
         private readonly IProfileStatusCategoryRepository _profileStatusCategoryRepository;
 
-        private readonly IOperationHandler<BlockUserEvent> _operationHandler;
+        private readonly IOperationHandler<BlockUserEvent> _disableHandler;
+
+        private readonly IOperationHandler<DeleteUserEvent> _deleteHandler;
 
         #endregion
 
@@ -30,12 +32,14 @@ namespace EscortBookCustomerProfile.Controllers
         (
             IProfileStatusRepository profileStatusRepository,
             IProfileStatusCategoryRepository profileStatusCategoryRepository,
-            IOperationHandler<BlockUserEvent> operationHandler
+            IOperationHandler<BlockUserEvent> disableHandler,
+            IOperationHandler<DeleteUserEvent> deleteHandler
         )
         {
             _profileStatusRepository = profileStatusRepository;
             _profileStatusCategoryRepository = profileStatusCategoryRepository;
-            _operationHandler = operationHandler;
+            _disableHandler = disableHandler;
+            _deleteHandler =  deleteHandler;
         }
 
         #endregion
@@ -62,7 +66,9 @@ namespace EscortBookCustomerProfile.Controllers
         public async Task<IActionResult> UpdateByExternal
         (
             [FromRoute] string id,
-            [FromBody] UpdateProfileStatusDTO profile
+            [FromBody] UpdateProfileStatusDTO profile,
+            [FromHeader(Name = "user-email")] string userEmail,
+            [FromHeader(Name = "user-type")] string userType
         )
         {
             var category = await _profileStatusCategoryRepository.GetByIdAsync(profile.ProfileStatusCategoryID);
@@ -79,8 +85,10 @@ namespace EscortBookCustomerProfile.Controllers
 
             if (category.Name == ValidProfileStatus.Locked || category.Name == ValidProfileStatus.Active)
             {
-                EmitMessage(id, category.Name);
+                EmitDisableMessage(id, category.Name);
             }
+
+            if (category.Name == ValidProfileStatus.Deleted) EmitDeletionMessage(id, userType, userEmail);
 
             return Ok(profileStatus);
         }
@@ -89,7 +97,9 @@ namespace EscortBookCustomerProfile.Controllers
         public async Task<IActionResult> UpdateByIdAsync
         (
             [FromBody] UpdateProfileStatusDTO profile,
-            [FromHeader(Name = "user-id")] string userId
+            [FromHeader(Name = "user-id")] string userId,
+            [FromHeader(Name = "user-email")] string userEmail,
+            [FromHeader(Name = "user-type")] string userType
         )
         {
             var category = await _profileStatusCategoryRepository.GetByIdAsync(profile.ProfileStatusCategoryID);
@@ -109,7 +119,9 @@ namespace EscortBookCustomerProfile.Controllers
 
             await _profileStatusRepository.UpdateByIdAsync(profileStatus);
 
-            if (category.Name == ValidProfileStatus.Deactivated) EmitMessage(userId, category.Name);
+            if (category.Name == ValidProfileStatus.Deactivated) EmitDisableMessage(userId, category.Name);
+
+            if (category.Name == ValidProfileStatus.Deleted) EmitDeletionMessage(userId, userType, userEmail);
 
             return Ok(profileStatus);
         }
@@ -118,10 +130,24 @@ namespace EscortBookCustomerProfile.Controllers
         
         #region snippe_Helpers
 
-        private void EmitMessage(string userId, string categoryName)
+        private void EmitDisableMessage(string userId, string categoryName)
         {
-            var blockUserEvent = new BlockUserEvent { UserId = userId, Status = categoryName };
-            Emitter<BlockUserEvent>.EmitMessage(_operationHandler, blockUserEvent);
+            var blockUserEvent = new BlockUserEvent {
+                UserId = userId,
+                Status = categoryName,
+            };
+            Emitter<BlockUserEvent>.EmitMessage(_disableHandler, blockUserEvent);
+        }
+
+        private void EmitDeletionMessage(string userId, string userType, string userEmail)
+        {
+            var deleteUserEvent = new DeleteUserEvent
+            {
+                UserId = userId,
+                UserType = userType,
+                UserEmail = userEmail
+            };
+            Emitter<DeleteUserEvent>.EmitMessage(_deleteHandler, deleteUserEvent);
         }
         
         #endregion
