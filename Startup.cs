@@ -36,6 +36,7 @@ namespace EscortBookCustomerProfile
             services.AddHostedService<ProfileStatusConsumer>();
             services.AddHostedService<S3Consumer>();
             services.AddHostedService<BlockUserConsumer>();
+            services.AddHostedService<DeleteUserConsumer>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
