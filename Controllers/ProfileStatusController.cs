@@ -88,7 +88,11 @@ namespace EscortBookCustomerProfile.Controllers
                 EmitDisableMessage(id, category.Name);
             }
 
-            if (category.Name == ValidProfileStatus.Deleted) EmitDeletionMessage(id, userType, userEmail);
+            if (category.Name == ValidProfileStatus.Deleted)
+            {
+                EmitDeletionMessage(id, userType, userEmail);
+                EmitDisableMessage(id, category.Name);
+            }
 
             return Ok(profileStatus);
         }
@@ -121,7 +125,11 @@ namespace EscortBookCustomerProfile.Controllers
 
             if (category.Name == ValidProfileStatus.Deactivated) EmitDisableMessage(userId, category.Name);
 
-            if (category.Name == ValidProfileStatus.Deleted) EmitDeletionMessage(userId, userType, userEmail);
+            if (category.Name == ValidProfileStatus.Deleted)
+            {
+                EmitDeletionMessage(userId, userType, userEmail);
+                EmitDisableMessage(userId, category.Name);
+            }
 
             return Ok(profileStatus);
         }
