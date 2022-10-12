@@ -4,47 +4,46 @@ using EscortBookCustomerProfile.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 
-namespace EscortBookCustomerProfile.Repositories
+namespace EscortBookCustomerProfile.Repositories;
+
+public class AvatarRepository : IAvatarRepository
 {
-    public class AvatarRepository : IAvatarRepository
+    #region snippet_Properties
+
+    private readonly EscortBookCustomerProfileContext _context;
+
+    #endregion
+
+    #region snippet_Constructors
+
+    public AvatarRepository(EscortBookCustomerProfileContext context)
+        => _context = context;
+
+    #endregion
+
+    #region snippet_ActionMethods
+
+    public async Task<Avatar> GetByIdAsync(string profileId)
+        => await _context.Avatars.AsNoTracking().FirstOrDefaultAsync(a => a.CustomerID == profileId);
+
+    public async Task CreateAsync(Avatar avatar)
     {
-        #region snippet_Properties
-
-        private readonly EscortBookCustomerProfileContext _context;
-
-        #endregion
-
-        #region snippet_Constructors
-
-        public AvatarRepository(EscortBookCustomerProfileContext context)
-            => _context = context;
-
-        #endregion
-
-        #region snippet_ActionMethods
-
-        public async Task<Avatar> GetByIdAsync(string profileId)
-            => await _context.Avatars.AsNoTracking().FirstOrDefaultAsync(a => a.CustomerID == profileId);
-
-        public async Task CreateAsync(Avatar avatar)
-        {
-            await _context.Avatars.AddAsync(avatar);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateByIdAsync(Avatar avatar, JsonPatchDocument<Avatar> currentAvatar)
-        {
-            currentAvatar.ApplyTo(avatar);
-            _context.Entry(avatar).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteByIdAsync(string id)
-        {
-            _context.Avatars.Remove(new Avatar { ID = id });
-            await _context.SaveChangesAsync();
-        }
-
-        #endregion
+        await _context.Avatars.AddAsync(avatar);
+        await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateByIdAsync(Avatar avatar, JsonPatchDocument<Avatar> currentAvatar)
+    {
+        currentAvatar.ApplyTo(avatar);
+        _context.Entry(avatar).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteByIdAsync(string id)
+    {
+        _context.Avatars.Remove(new Avatar { ID = id });
+        await _context.SaveChangesAsync();
+    }
+
+    #endregion
 }

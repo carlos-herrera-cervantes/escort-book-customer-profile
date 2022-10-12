@@ -2,16 +2,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using EscortBookCustomerProfile.Models;
 
-namespace EscortBookCustomerProfile.Repositories
+namespace EscortBookCustomerProfile.Repositories;
+
+public interface IPhotoRepository
 {
-    public interface IPhotoRepository
-    {
-        Task<IEnumerable<Photo>> GetAllAsync(string profileId, int page, int pageSize);
+    Task<IEnumerable<Photo>> GetAllAsync(string profileId, int page, int pageSize);
 
-        Task<Photo> GetByIdAsync(string profileId, string id);
+    Task<Photo> GetByIdAsync(string profileId, string id);
 
-        Task CreateAsync(Photo photo);
+    Task CreateAsync(Photo photo);
 
-        Task DeleteByIdAsync(string id);
-    }
+    Task DeleteByIdAsync(string id);
 }

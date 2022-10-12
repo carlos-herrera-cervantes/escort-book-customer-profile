@@ -1,73 +1,70 @@
 ﻿using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace EscortBookCustomerProfile.Services
+namespace EscortBookCustomerProfile.Services;
+
+public class AWSS3Service : IAWSS3Service
 {
-    public class AWSS3Service : IAWSS3Service
+    #region snippet_Properties
+
+    private readonly IAmazonS3 _s3Client;
+
+    private readonly string _bucketName;
+
+    private readonly string _endpoint;
+
+    #endregion
+
+    #region snippet_Constructors
+
+    public AWSS3Service()
     {
-        #region snippet_Properties
+        var accessKey = Environment.GetEnvironmentVariable("AWS_S3_ACCESS_KEY");
+        var secretKey = Environment.GetEnvironmentVariable("AWS_S3_SECRET_KEY");
+        var credentials = new BasicAWSCredentials(accessKey, secretKey);
 
-        private readonly IAmazonS3 _s3Client;
-
-        private readonly string _bucketName;
-
-        private readonly string _endpoint;
-
-        #endregion
-
-        #region snippet_Constructors
-
-        public AWSS3Service(IConfiguration configuration)
+        _s3Client = new AmazonS3Client(credentials, new AmazonS3Config
         {
-            var s3Section = configuration.GetSection("AWS").GetSection("S3");
-            var accessKey = s3Section.GetSection("AccessKey").Value;
-            var secretKey = s3Section.GetSection("SecretKey").Value;
-
-            var credentials = new BasicAWSCredentials(accessKey, secretKey);
-
-            _s3Client = new AmazonS3Client(credentials, new AmazonS3Config
-            {
-                ServiceURL = s3Section.GetSection("Endpoint").Value,
-                UseHttp = true,
-                ForcePathStyle = true,
-                AuthenticationRegion = s3Section.GetSection("Region").Value
-            });
-            _bucketName = s3Section.GetSection("Name").Value;
-            _endpoint = s3Section.GetSection("Endpoint").Value;
-        }
-
-        #endregion
-
-        #region snippet_ActionMethods
-
-        public async Task<string> PutObjectAsync(string key, string profileId, Stream imageStream)
-        {
-            var request = new PutObjectRequest
-            {
-                InputStream = imageStream,
-                BucketName = _bucketName,
-                Key = $"{profileId}/{key}"
-            };
-
-            await _s3Client.PutObjectAsync(request);
-            return $"{_endpoint}/{_bucketName}/{profileId}/{key}";
-        }
-
-        public async Task DeleteObjectAsync(string key)
-        {
-            var request = new DeleteObjectRequest
-            {
-                BucketName = _bucketName,
-                Key = key
-            };
-
-            await _s3Client.DeleteObjectAsync(request);
-        }
-
-        #endregion
+            ServiceURL = Environment.GetEnvironmentVariable("AWS_S3_ENDPOINT"),
+            UseHttp = true,
+            ForcePathStyle = true,
+            AuthenticationRegion = Environment.GetEnvironmentVariable("AWS_S3_REGION")
+        });
+        _bucketName = Environment.GetEnvironmentVariable("AWS_S3_NAME");
+        _endpoint = Environment.GetEnvironmentVariable("AWS_S3_ENDPOINT");
     }
+
+    #endregion
+
+    #region snippet_ActionMethods
+
+    public async Task<string> PutObjectAsync(string key, string profileId, Stream imageStream)
+    {
+        var request = new PutObjectRequest
+        {
+            InputStream = imageStream,
+            BucketName = _bucketName,
+            Key = $"{profileId}/{key}"
+        };
+
+        await _s3Client.PutObjectAsync(request);
+        return $"{_endpoint}/{_bucketName}/{profileId}/{key}";
+    }
+
+    public async Task DeleteObjectAsync(string key)
+    {
+        var request = new DeleteObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = key
+        };
+
+        await _s3Client.DeleteObjectAsync(request);
+    }
+
+    #endregion
 }

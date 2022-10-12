@@ -1,22 +1,21 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EscortBookCustomerProfile.Models
+namespace EscortBookCustomerProfile.Models;
+
+[Table("profile_status_category", Schema = "public")]
+public class ProfileStatusCategory : Base
 {
-    [Table("profile_status_category", Schema = "public")]
-    public class ProfileStatusCategory : Base
-    {
-        #region snippet_Properties
+    #region snippet_Properties
 
-        [Column("id")]
-        public string ID { get; set; } = Guid.NewGuid().ToString();
+    [Column("id")]
+    public string ID { get; set; } = Guid.NewGuid().ToString();
 
-        [Column("name")]
-        public string Name { get; set; }
+    [Column("name")]
+    public string Name { get; set; }
 
-        [Column("active")]
-        public bool Active { get; set; }
+    [Column("active")]
+    public bool Active { get; set; }
 
-        #endregion
-    }
+    #endregion
 }

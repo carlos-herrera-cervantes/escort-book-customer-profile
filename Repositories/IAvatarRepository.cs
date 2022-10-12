@@ -2,16 +2,15 @@ using System.Threading.Tasks;
 using EscortBookCustomerProfile.Models;
 using Microsoft.AspNetCore.JsonPatch;
 
-namespace EscortBookCustomerProfile.Repositories
+namespace EscortBookCustomerProfile.Repositories;
+
+public interface IAvatarRepository
 {
-    public interface IAvatarRepository
-    {
-        Task<Avatar> GetByIdAsync(string profileId);
+    Task<Avatar> GetByIdAsync(string profileId);
 
-        Task CreateAsync(Avatar avatar);
+    Task CreateAsync(Avatar avatar);
 
-        Task UpdateByIdAsync(Avatar avatar, JsonPatchDocument<Avatar> currentAvatar);
+    Task UpdateByIdAsync(Avatar avatar, JsonPatchDocument<Avatar> currentAvatar);
 
-        Task DeleteByIdAsync(string id);
-    }
+    Task DeleteByIdAsync(string id);
 }

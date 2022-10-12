@@ -9,126 +9,125 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EscortBookCustomerProfile.Controllers
+namespace EscortBookCustomerProfile.Controllers;
+
+[Route("api/v1/customer")]
+[ApiController]
+public class IdentificationController : ControllerBase
 {
-    [Route("api/v1/customer")]
-    [ApiController]
-    public class IdentificationController : ControllerBase
+    #region snippet_Properties
+
+    private readonly IIdentificationRepository _identificationRepository;
+
+    private readonly IAWSS3Service _s3Service;
+
+    private readonly IConfiguration _configuration;
+
+    #endregion
+
+    #region snippet_Constructors
+
+    public IdentificationController
+    (
+        IIdentificationRepository identificationRepository,
+        IAWSS3Service s3Service,
+        IConfiguration configuration
+    )
     {
-        #region snippet_Properties
-
-        private readonly IIdentificationRepository _identificationRepository;
-
-        private readonly IAWSS3Service _s3Service;
-
-        private readonly IConfiguration _configuration;
-
-        #endregion
-
-        #region snippet_Constructors
-
-        public IdentificationController
-        (
-            IIdentificationRepository identificationRepository,
-            IAWSS3Service s3Service,
-            IConfiguration configuration
-        )
-        {
-            _identificationRepository = identificationRepository;
-            _s3Service = s3Service;
-            _configuration = configuration;
-        }
-
-        #endregion
-
-        #region snippet_ActionMethods
-
-        [HttpGet("{id}/profile/identification")]
-        public async Task<IActionResult> GetByExternalAsync([FromRoute] string id)
-        {
-            var rows = await _identificationRepository.GetAllByCustomerAsync(id);
-            var endpoint = _configuration["AWS:S3:Endpoint"];
-            var bucketName = _configuration["AWS:S3:Name"];
-            var identifications = rows.Select(r =>
-            {
-                r.Path = $"{endpoint}/{bucketName}/{r.Path}";
-                return r;
-            });
-
-            return Ok(identifications);
-        }
-
-        [HttpGet("profile/identification/{identificationPartID}")]
-        public async Task<IActionResult> GetByIdAsync
-        (
-            [FromHeader(Name = "user-id")] string userId,
-            [FromRoute] string identificationPartID
-        )
-        {
-            var identification = await _identificationRepository.GetByIdAsync(userId, identificationPartID);
-
-            if (identification is null) return NotFound();
-
-            var endpoint = _configuration["AWS:S3:Endpoint"];
-            var bucketName = _configuration["AWS:S3:Name"];
-
-            identification.Path = $"{endpoint}/{bucketName}/{identification.Path}";
-
-            return Ok(identification);
-        }
-
-        [HttpPost("profile/identification")]
-        [IdentificationPartExists]
-        [RequestSizeLimit(2_000_000)]
-        public async Task<IActionResult> CreateAsync
-        (
-            [FromHeader(Name = "user-id")] string userId,
-            [FromForm] CreateIdentificationDto dto
-        )
-        {
-            var (image, identificationPartID) = dto;
-            var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
-
-            var identification = new Identification();
-            identification.CustomerID = userId;
-            identification.Path = $"{userId}/{image.FileName}";
-            identification.IdentificationPartID = identificationPartID;
-
-            await _identificationRepository.CreateAsync(identification);
-
-            identification.Path = url;
-
-            return Created("", identification);
-        }
-
-        [HttpPatch("profile/identification/{identificationPartID}")]
-        [IdentificationPartExists]
-        [RequestSizeLimit(2_000_000)]
-        public async Task<IActionResult> UpdateByIdAsync
-        (
-            [FromHeader(Name = "user-id")] string userId,
-            [FromRoute] string identificationPartID,
-            [FromForm] IFormFile image
-        )
-        {
-            var newIdentification = await _identificationRepository.GetByIdAsync(userId, identificationPartID);
-
-            if (newIdentification is null) return NotFound();
-
-            var imageStream = image.OpenReadStream();
-            var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
-
-            var currentIdentification = new JsonPatchDocument<Identification>();
-            currentIdentification.Replace(a => a.Path, $"{userId}/{image.FileName}");
-
-            await _identificationRepository.UpdateByIdAsync(newIdentification, currentIdentification);
-
-            newIdentification.Path = url;
-
-            return Ok(newIdentification);
-        }
-
-        #endregion
+        _identificationRepository = identificationRepository;
+        _s3Service = s3Service;
+        _configuration = configuration;
     }
+
+    #endregion
+
+    #region snippet_ActionMethods
+
+    [HttpGet("{id}/profile/identification")]
+    public async Task<IActionResult> GetByExternalAsync([FromRoute] string id)
+    {
+        var rows = await _identificationRepository.GetAllByCustomerAsync(id);
+        var endpoint = _configuration["AWS:S3:Endpoint"];
+        var bucketName = _configuration["AWS:S3:Name"];
+        var identifications = rows.Select(r =>
+        {
+            r.Path = $"{endpoint}/{bucketName}/{r.Path}";
+            return r;
+        });
+
+        return Ok(identifications);
+    }
+
+    [HttpGet("profile/identification/{identificationPartID}")]
+    public async Task<IActionResult> GetByIdAsync
+    (
+        [FromHeader(Name = "user-id")] string userId,
+        [FromRoute] string identificationPartID
+    )
+    {
+        var identification = await _identificationRepository.GetByIdAsync(userId, identificationPartID);
+
+        if (identification is null) return NotFound();
+
+        var endpoint = _configuration["AWS:S3:Endpoint"];
+        var bucketName = _configuration["AWS:S3:Name"];
+
+        identification.Path = $"{endpoint}/{bucketName}/{identification.Path}";
+
+        return Ok(identification);
+    }
+
+    [HttpPost("profile/identification")]
+    [IdentificationPartExists]
+    [RequestSizeLimit(2_000_000)]
+    public async Task<IActionResult> CreateAsync
+    (
+        [FromHeader(Name = "user-id")] string userId,
+        [FromForm] CreateIdentificationDto dto
+    )
+    {
+        var (image, identificationPartID) = dto;
+        var imageStream = image.OpenReadStream();
+        var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
+
+        var identification = new Identification();
+        identification.CustomerID = userId;
+        identification.Path = $"{userId}/{image.FileName}";
+        identification.IdentificationPartID = identificationPartID;
+
+        await _identificationRepository.CreateAsync(identification);
+
+        identification.Path = url;
+
+        return Created("", identification);
+    }
+
+    [HttpPatch("profile/identification/{identificationPartID}")]
+    [IdentificationPartExists]
+    [RequestSizeLimit(2_000_000)]
+    public async Task<IActionResult> UpdateByIdAsync
+    (
+        [FromHeader(Name = "user-id")] string userId,
+        [FromRoute] string identificationPartID,
+        [FromForm] IFormFile image
+    )
+    {
+        var newIdentification = await _identificationRepository.GetByIdAsync(userId, identificationPartID);
+
+        if (newIdentification is null) return NotFound();
+
+        var imageStream = image.OpenReadStream();
+        var url = await _s3Service.PutObjectAsync(image.FileName, userId, imageStream);
+
+        var currentIdentification = new JsonPatchDocument<Identification>();
+        currentIdentification.Replace(a => a.Path, $"{userId}/{image.FileName}");
+
+        await _identificationRepository.UpdateByIdAsync(newIdentification, currentIdentification);
+
+        newIdentification.Path = url;
+
+        return Ok(newIdentification);
+    }
+
+    #endregion
 }

@@ -2,30 +2,30 @@ using System.Threading.Tasks;
 using EscortBookCustomerProfile.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EscortBookCustomerProfile.Controllers
+namespace EscortBookCustomerProfile.Controllers;
+
+[Route("api/v1/customer/identification-parts")]
+[ApiController]
+public class IdentificationPartController : ControllerBase
 {
-    [Route("api/v1/customer/identification-parts")]
-    [ApiController]
-    public class IdentificationPartController : ControllerBase
-    {
-        #region snippet_Propertiees
+    #region snippet_Propertiees
 
-        private readonly IIdentificationPartRepository _identificationPartReporitory;
+    private readonly IIdentificationPartRepository _identificationPartReporitory;
 
-        #endregion
+    #endregion
 
-        #region snippet_Constructors
+    #region snippet_Constructors
 
-        public IdentificationPartController(IIdentificationPartRepository identificationPartRepository)
-            => _identificationPartReporitory = identificationPartRepository;
+    public IdentificationPartController(IIdentificationPartRepository identificationPartRepository)
+        => _identificationPartReporitory = identificationPartRepository;
 
-        #endregion
+    #endregion
 
-        #region snippet_ActionMethods
+    #region snippet_ActionMethods
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllAsync() => Ok(await _identificationPartReporitory.GetAllAsync());
+    [HttpGet]
+    public async Task<IActionResult> GetAllAsync()
+        => Ok(await _identificationPartReporitory.GetAllAsync());
 
-        #endregion
-    }
+    #endregion
 }

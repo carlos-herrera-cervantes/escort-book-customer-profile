@@ -4,38 +4,37 @@ using EscortBookCustomerProfile.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
-namespace EscortBookCustomerProfile.Repositories
+namespace EscortBookCustomerProfile.Repositories;
+
+public class ProfileStatusCategoryRepository : IProfileStatusCategoryRepository
 {
-    public class ProfileStatusCategoryRepository : IProfileStatusCategoryRepository
-    {
-        #region snippet_Properties
+    #region snippet_Properties
 
-        private readonly EscortBookCustomerProfileContext _context;
+    private readonly EscortBookCustomerProfileContext _context;
 
-        #endregion
+    #endregion
 
-        #region snippet_Constructors
+    #region snippet_Constructors
 
-        public ProfileStatusCategoryRepository(EscortBookCustomerProfileContext context)
-            => _context = context;
+    public ProfileStatusCategoryRepository(EscortBookCustomerProfileContext context)
+        => _context = context;
 
-        #endregion
+    #endregion
 
-        #region snippet_ActionMethods
+    #region snippet_ActionMethods
 
-        public async Task<IEnumerable<ProfileStatusCategory>> GetAllAsync()
-            => await _context.ProfileStatusCategories.ToListAsync();
+    public async Task<IEnumerable<ProfileStatusCategory>> GetAllAsync()
+        => await _context.ProfileStatusCategories.ToListAsync();
 
-        public async Task<ProfileStatusCategory> GetByName(string name)
-            => await _context.ProfileStatusCategories
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Name == name);
+    public async Task<ProfileStatusCategory> GetByName(string name)
+        => await _context.ProfileStatusCategories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Name == name);
 
-        public async Task<ProfileStatusCategory> GetByIdAsync(string id)
-            => await _context.ProfileStatusCategories
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.ID == id);
+    public async Task<ProfileStatusCategory> GetByIdAsync(string id)
+        => await _context.ProfileStatusCategories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.ID == id);
 
-        #endregion
-    }
+    #endregion
 }

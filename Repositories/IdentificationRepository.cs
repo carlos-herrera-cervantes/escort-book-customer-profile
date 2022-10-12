@@ -6,46 +6,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EscortBookCustomerProfile.Repositories
+namespace EscortBookCustomerProfile.Repositories;
+
+public class IdentificationRepository : IIdentificationRepository
 {
-    public class IdentificationRepository : IIdentificationRepository
+    #region snippet_Properties
+
+    private readonly EscortBookCustomerProfileContext _context;
+
+    #endregion
+
+    #region snippet_Constructors
+
+    public IdentificationRepository(EscortBookCustomerProfileContext context)
+        => _context = context;
+
+    #endregion
+
+    #region snippet_ActionMethods
+
+    public async Task<IEnumerable<Identification>> GetAllByCustomerAsync(string profileId)
+        => await _context.Identifications.Where(i => i.CustomerID == profileId).ToListAsync();
+
+    public async Task<Identification> GetByIdAsync(string profileId, string partId)
+        => await _context.Identifications
+            .AsNoTracking()
+            .FirstOrDefaultAsync(i => i.CustomerID == profileId && i.IdentificationPartID == partId);
+
+    public async Task CreateAsync(Identification identification)
     {
-        #region snippet_Properties
-
-        private readonly EscortBookCustomerProfileContext _context;
-
-        #endregion
-
-        #region snippet_Constructors
-
-        public IdentificationRepository(EscortBookCustomerProfileContext context)
-            => _context = context;
-
-        #endregion
-
-        #region snippet_ActionMethods
-
-        public async Task<IEnumerable<Identification>> GetAllByCustomerAsync(string profileId)
-            => await _context.Identifications.Where(i => i.CustomerID == profileId).ToListAsync();
-
-        public async Task<Identification> GetByIdAsync(string profileId, string partId)
-            => await _context.Identifications
-                .AsNoTracking()
-                .FirstOrDefaultAsync(i => i.CustomerID == profileId && i.IdentificationPartID == partId);
-
-        public async Task CreateAsync(Identification identification)
-        {
-            await _context.Identifications.AddAsync(identification);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateByIdAsync(Identification identification, JsonPatchDocument<Identification> currentIdentification)
-        {
-            currentIdentification.ApplyTo(identification);
-            _context.Entry(identification).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
-
-        #endregion
+        await _context.Identifications.AddAsync(identification);
+        await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateByIdAsync
+    (
+        Identification identification,
+        JsonPatchDocument<Identification> currentIdentification
+    )
+    {
+        currentIdentification.ApplyTo(identification);
+        _context.Entry(identification).State = EntityState.Modified;
+        await _context.SaveChangesAsync();
+    }
+
+    #endregion
 }
