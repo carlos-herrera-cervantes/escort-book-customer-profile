@@ -3,16 +3,19 @@ using Microsoft.AspNetCore.JsonPatch;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace EscortBookCustomerProfile.Repositories
+namespace EscortBookCustomerProfile.Repositories;
+
+public interface IIdentificationRepository
 {
-    public interface IIdentificationRepository
-    {
-        Task<IEnumerable<Identification>> GetAllByCustomerAsync(string profileId);
+    Task<IEnumerable<Identification>> GetAllByCustomerAsync(string profileId);
 
-        Task<Identification> GetByIdAsync(string profileId, string partId);
+    Task<Identification> GetByIdAsync(string profileId, string partId);
 
-        Task CreateAsync(Identification identification);
+    Task CreateAsync(Identification identification);
 
-        Task UpdateByIdAsync(Identification identification, JsonPatchDocument<Identification> currentIdentification);
-    }
+    Task UpdateByIdAsync
+    (
+        Identification identification,
+        JsonPatchDocument<Identification> currentIdentification
+    );
 }

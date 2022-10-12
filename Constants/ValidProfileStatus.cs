@@ -1,13 +1,12 @@
-﻿namespace EscortBookCustomerProfile.Constants
+﻿namespace EscortBookCustomerProfile.Constants;
+
+public static class ValidProfileStatus
 {
-    public static class ValidProfileStatus
-    {
-        public const string Deactivated = "Deactivated";
+    public const string Deactivated = "Deactivated";
 
-        public const string Deleted = "Deleted";
+    public const string Deleted = "Deleted";
 
-        public const string Locked = "Locked";
+    public const string Locked = "Locked";
 
-        public const string Active = "Active";
-    }
+    public const string Active = "Active";
 }

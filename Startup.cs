@@ -1,3 +1,4 @@
+using System;
 using EscortBookCustomerProfile.Backgrounds;
 using EscortBookCustomerProfile.Contexts;
 using EscortBookCustomerProfile.Handlers;
@@ -6,48 +7,42 @@ using EscortBookCustomerProfile.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace EscortBookCustomerProfile
+namespace EscortBookCustomerProfile;
+
+public class Startup
 {
-    public class Startup
+    public void ConfigureServices(IServiceCollection services)
     {
-        private IConfiguration Configuration { get; set; }
+        services.AddControllers().AddNewtonsoftJson();
+        services.AddDbContext<EscortBookCustomerProfileContext>(options
+            => options.UseNpgsql(Environment.GetEnvironmentVariable("PG_DB_CONNECTION")));
+        services.AddTransient<IProfileRepository, ProfileRepository>();
+        services.AddTransient<IAvatarRepository, AvatarRepository>();
+        services.AddTransient<IIdentificationRepository, IdentificationRepository>();
+        services.AddTransient<IPhotoRepository, PhotoRepository>();
+        services.AddTransient<IProfileStatusRepository, ProfileStatusRepository>();
+        services.AddTransient<IAWSS3Service, AWSS3Service>();
+        services.AddTransient<IKafkaService, KafkaService>();
+        services.AddTransient<IProfileStatusCategoryRepository, ProfileStatusCategoryRepository>();
+        services.AddTransient<IIdentificationPartRepository, IdentificationPartRepository>();
+        services.AddSingleton(typeof(IOperationHandler<>), typeof(OperationHandler<>));
+        services.AddHostedService<ProfileStatusConsumer>();
+        services.AddHostedService<S3Consumer>();
+        services.AddHostedService<BlockUserConsumer>();
+        services.AddHostedService<DeleteUserConsumer>();
+    }
 
-        public Startup(IConfiguration configuration) => Configuration = configuration;
-
-        public void ConfigureServices(IServiceCollection services)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
         {
-            services.AddControllers().AddNewtonsoftJson();
-            services.AddDbContext<EscortBookCustomerProfileContext>(options
-                => options.UseNpgsql(Configuration["ConnectionStrings:Default"]));
-            services.AddTransient<IProfileRepository, ProfileRepository>();
-            services.AddTransient<IAvatarRepository, AvatarRepository>();
-            services.AddTransient<IIdentificationRepository, IdentificationRepository>();
-            services.AddTransient<IPhotoRepository, PhotoRepository>();
-            services.AddTransient<IProfileStatusRepository, ProfileStatusRepository>();
-            services.AddTransient<IAWSS3Service, AWSS3Service>();
-            services.AddTransient<IKafkaService, KafkaService>();
-            services.AddTransient<IProfileStatusCategoryRepository, ProfileStatusCategoryRepository>();
-            services.AddTransient<IIdentificationPartRepository, IdentificationPartRepository>();
-            services.AddSingleton(typeof(IOperationHandler<>), typeof(OperationHandler<>));
-            services.AddHostedService<ProfileStatusConsumer>();
-            services.AddHostedService<S3Consumer>();
-            services.AddHostedService<BlockUserConsumer>();
-            services.AddHostedService<DeleteUserConsumer>();
+            app.UseDeveloperExceptionPage();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
-            app.UseRouting();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
-        }
+        app.UseRouting();
+        app.UseEndpoints(endpoints => endpoints.MapControllers());
     }
 }

@@ -28,3 +28,4 @@ Properties/
 appsettings.*
 .vs
 .idea
+.env

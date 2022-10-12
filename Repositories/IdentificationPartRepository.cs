@@ -4,31 +4,30 @@ using EscortBookCustomerProfile.Contexts;
 using EscortBookCustomerProfile.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EscortBookCustomerProfile.Repositories
+namespace EscortBookCustomerProfile.Repositories;
+
+public class IdentificationPartRepository : IIdentificationPartRepository
 {
-    public class IdentificationPartRepository : IIdentificationPartRepository
-    {
-        #region snippet_Properties
+    #region snippet_Properties
 
-        private readonly EscortBookCustomerProfileContext _context;
+    private readonly EscortBookCustomerProfileContext _context;
 
-        #endregion
+    #endregion
 
-        #region snippet_Constructors
+    #region snippet_Constructors
 
-        public IdentificationPartRepository(EscortBookCustomerProfileContext context)
-            => _context = context;
+    public IdentificationPartRepository(EscortBookCustomerProfileContext context)
+        => _context = context;
 
-        #endregion
+    #endregion
 
-        #region snippet_ActionMethods
+    #region snippet_ActionMethods
 
-        public async Task<IEnumerable<IdentificationPart>> GetAllAsync()
-            => await this._context.IdentificationParts.ToListAsync();
+    public async Task<IEnumerable<IdentificationPart>> GetAllAsync()
+        => await this._context.IdentificationParts.ToListAsync();
 
-        public async Task<IdentificationPart> GetByIdAsync(string id)
-            => await this._context.IdentificationParts.AsNoTracking().FirstOrDefaultAsync(i => i.ID == id);
+    public async Task<IdentificationPart> GetByIdAsync(string id)
+        => await this._context.IdentificationParts.AsNoTracking().FirstOrDefaultAsync(i => i.ID == id);
 
-        #endregion
-    }
+    #endregion
 }
