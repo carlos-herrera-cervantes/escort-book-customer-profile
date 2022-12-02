@@ -1,0 +1,62 @@
+using System.Threading;
+using System.Threading.Tasks;
+using Confluent.Kafka;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using EscortBookCustomerProfile.Web.Handlers;
+using EscortBookCustomerProfile.Web.Services;
+using EscortBookCustomerProfile.Web.Types;
+using System;
+
+namespace EscortBookCustomerProfile.Web.Backgrounds;
+
+public class DeleteUserConsumer : BackgroundService
+{
+    #region snippet_Properties
+
+    private readonly IOperationHandler<DeleteUserEvent> _operationHandler;
+
+    private readonly IKafkaService _kafkaService;
+
+    private readonly ILogger _logger;
+
+    #endregion
+
+    #region snippet_Constructors
+
+    public DeleteUserConsumer(
+        IOperationHandler<DeleteUserEvent> operationHandler,
+        IServiceScopeFactory factory,
+        ILogger<BlockUserConsumer> logger
+    )
+    {
+        _operationHandler = operationHandler;
+        _kafkaService = factory.CreateScope().ServiceProvider.GetRequiredService<IKafkaService>();
+        _logger = logger;
+    }
+
+    #endregion
+
+    #region snippet_ActionMethods
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        Func<DeleteUserEvent, Task> sendMessageFn = async (DeleteUserEvent deleteUserEvent) =>
+        {
+            var deleteUserEventStr = JsonConvert.SerializeObject(deleteUserEvent);
+            var message = new Message<Null, string> { Value = deleteUserEventStr };
+
+            await _kafkaService.SendMessageAsync("user-delete-account", message);
+
+            _logger.LogInformation($"SUCCESSFUL PROPAGATED DELETION OF CUSTOMER");
+        };
+
+        _operationHandler.Subscribe("DeleteUserConsumer", async evt => await sendMessageFn(evt));
+
+        return Task.CompletedTask;
+    }
+
+    #endregion
+}
