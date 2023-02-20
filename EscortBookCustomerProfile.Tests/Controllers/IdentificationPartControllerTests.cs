@@ -1,10 +1,10 @@
-﻿using Moq;
-using System.Threading.Tasks;
-using Xunit;
+﻿using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc;
+using Xunit;
+using Moq;
 using EscortBookCustomerProfile.Web.Repositories;
 using EscortBookCustomerProfile.Web.Models;
 using EscortBookCustomerProfile.Web.Controllers;

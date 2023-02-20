@@ -3,11 +3,12 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
-using Xunit;
 using Microsoft.EntityFrameworkCore;
+using Xunit;
 using EscortBookCustomerProfile.Web.Repositories;
 using EscortBookCustomerProfile.Web.Contexts;
 using EscortBookCustomerProfile.Web.Models;
+using EscortBookCustomerProfile.Web.Constants;
 
 namespace EscortBookCustomerProfile.Tests.Repositories;
 
@@ -26,7 +27,7 @@ public class ProfileStatusCategoryRepositoryTests
 
     public ProfileStatusCategoryRepositoryTests()
         => _contextOptions = new DbContextOptionsBuilder<EscortBookCustomerProfileContext>()
-            .UseNpgsql(Environment.GetEnvironmentVariable("PG_DB_CONNECTION"))
+            .UseNpgsql(PostgresDatabase.CustomerProfile)
             .Options;
 
     #endregion

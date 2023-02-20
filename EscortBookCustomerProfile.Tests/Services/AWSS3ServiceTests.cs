@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
-using Xunit;
+using System.Threading;
 using System.Diagnostics.CodeAnalysis;
-using Moq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Xunit;
 using Amazon.S3;
 using Amazon.S3.Model;
-using System.Threading;
+using Moq;
 using EscortBookCustomerProfile.Web.Services;
 using EscortBookCustomerProfile.Web.Constants;
 

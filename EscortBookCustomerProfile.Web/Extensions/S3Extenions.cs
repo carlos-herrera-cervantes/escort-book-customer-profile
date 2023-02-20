@@ -1,6 +1,6 @@
-﻿using Amazon.Runtime;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Amazon.Runtime;
 using Amazon.S3;
-using Microsoft.Extensions.DependencyInjection;
 using EscortBookCustomerProfile.Web.Constants;
 
 namespace EscortBookCustomerProfile.Web.Extensions;

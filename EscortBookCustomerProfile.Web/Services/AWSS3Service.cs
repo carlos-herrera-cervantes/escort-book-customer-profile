@@ -1,7 +1,7 @@
-﻿using Amazon.S3;
-using Amazon.S3.Model;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
+using Amazon.S3;
+using Amazon.S3.Model;
 using EscortBookCustomerProfile.Web.Constants;
 
 namespace EscortBookCustomerProfile.Web.Services;

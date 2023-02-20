@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 builder.Services.AddDbContext<EscortBookCustomerProfileContext>(options
-    => options.UseNpgsql(Environment.GetEnvironmentVariable("PG_DB_CONNECTION")));
+    => options.UseNpgsql(PostgresDatabase.CustomerProfile));
 builder.Services.AddS3Client();
 builder.Services.AddKafkaClient<IKafkaService>(new ProducerConfig
 {
