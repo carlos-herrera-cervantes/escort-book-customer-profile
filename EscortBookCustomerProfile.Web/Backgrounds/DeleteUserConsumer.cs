@@ -1,14 +1,14 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Confluent.Kafka;
+using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Confluent.Kafka;
 using EscortBookCustomerProfile.Web.Handlers;
 using EscortBookCustomerProfile.Web.Services;
 using EscortBookCustomerProfile.Web.Types;
-using System;
 
 namespace EscortBookCustomerProfile.Web.Backgrounds;
 

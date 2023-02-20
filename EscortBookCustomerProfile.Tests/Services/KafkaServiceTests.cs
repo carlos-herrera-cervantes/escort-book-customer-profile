@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel;
-using Xunit;
 using System.Diagnostics.CodeAnalysis;
-using Moq;
-using Confluent.Kafka;
 using System.Threading.Tasks;
 using System.Threading;
+using Xunit;
+using Moq;
+using Confluent.Kafka;
 using EscortBookCustomerProfile.Web.Services;
 
 namespace EscortBookCustomerProfile.Tests.Services;

@@ -27,7 +27,7 @@ public class ProfileRepositoryTests
 
     public ProfileRepositoryTests()
         => _contextOptions = new DbContextOptionsBuilder<EscortBookCustomerProfileContext>()
-            .UseNpgsql(Environment.GetEnvironmentVariable("PG_DB_CONNECTION"))
+            .UseNpgsql(PostgresDatabase.CustomerProfile)
             .Options;
 
     #endregion

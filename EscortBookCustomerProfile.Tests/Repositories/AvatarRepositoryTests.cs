@@ -2,12 +2,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel;
 using System;
 using System.Threading.Tasks;
-using Xunit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.JsonPatch;
+using Xunit;
 using EscortBookCustomerProfile.Web.Repositories;
 using EscortBookCustomerProfile.Web.Contexts;
 using EscortBookCustomerProfile.Web.Models;
+using EscortBookCustomerProfile.Web.Constants;
 
 namespace EscortBookCustomerProfile.Tests.Repositories;
 
@@ -26,7 +27,7 @@ public class AvatarRepositoryTests
 
     public AvatarRepositoryTests()
         => _contextOptions = new DbContextOptionsBuilder<EscortBookCustomerProfileContext>()
-            .UseNpgsql(Environment.GetEnvironmentVariable("PG_DB_CONNECTION"))
+            .UseNpgsql(PostgresDatabase.CustomerProfile)
             .Options;
 
     #endregion
